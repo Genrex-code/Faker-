@@ -1,0 +1,18 @@
+{
+  "timestamp": "2026-05-18T11:41:39.490223",
+  "volumen": 1000,
+  "motor": "python",
+  "tiempo_segundos": 0.0,
+  "config": {
+    "volumen": 1000,
+    "columnas": [
+      "nombre",
+      "email",
+      "edad",
+      "telefono",
+      "direccion"
+    ],
+    "formato": "excel",
+    "_motor": "python"
+  }
+}
