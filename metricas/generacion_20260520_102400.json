@@ -1,0 +1,23 @@
+{
+  "timestamp": "2026-05-20T10:24:00.291808",
+  "volumen": 10000,
+  "motor": "python",
+  "tiempo_segundos": 2.93,
+  "config": {
+    "volumen": 10000,
+    "columnas": [
+      "{",
+      "\"volumen\": 500,",
+      "\"columnas\": [\"nombre\", \"email\", \"edad\", \"ciudad\", \"salario\"],",
+      "\"formato\": \"excel\",",
+      "\"motor\": \"python\"",
+      "}"
+    ],
+    "formato": "excel",
+    "_motor": "python",
+    "_metadata": {
+      "fuente": "usuario_interactivo",
+      "timestamp": "2026-05-20T10:23:57.364180"
+    }
+  }
+}

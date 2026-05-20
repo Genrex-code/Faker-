@@ -1,0 +1,23 @@
+{
+  "timestamp": "2026-05-20T10:25:09.390068",
+  "volumen": 500,
+  "motor": "python",
+  "tiempo_segundos": 0.1,
+  "config": {
+    "volumen": 500,
+    "columnas": [
+      "nombre",
+      "email",
+      "edad",
+      "ciudad",
+      "salario"
+    ],
+    "formato": "excel",
+    "_motor": "python",
+    "_metadata": {
+      "fuente": "json:configs\\ejemplo_configs.json",
+      "archivo_original": "configs\\ejemplo_configs.json",
+      "timestamp": "2026-05-20T10:25:09.290486"
+    }
+  }
+}

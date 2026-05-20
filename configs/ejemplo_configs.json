@@ -1,0 +1,6 @@
+{
+  "volumen": 500,
+  "columnas": ["nombre", "email", "edad", "ciudad", "salario"],
+  "formato": "excel",
+  "motor": "python"
+}

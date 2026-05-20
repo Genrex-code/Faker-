@@ -1,29 +1,18 @@
 """
-NAHUAL - Pipilinais v4.0 (Orquestador Core)
-REFACTORIZADO: Responsabilidad única - solo orquesta, no implementa exportadores.
-Delega TODA exportación al módulo exports/ExportManager.py
+NAHUAL - Pipilinais v5.0 (Orquestador Core)
+CORREGIDO: Importaciones correctas, manejo de errores mejorado
 """
 
 import logging
 import time
 from pathlib import Path
 from typing import Dict, Any, Optional
-from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
 
 class State:
-    """
-    Pipilinais v4.0 - Orquestador Core de Nahual
-    
-    PRINCIPIOS:
-    1. Recibe config del Main
-    2. Decide qué motor usar (Python Faker o Rust)
-    3. Orquesta generación + exportación (DELEGANDO)
-    4. Mide performance
-    5. NO implementa lógica de exportación - eso es responsabilidad de exports/
-    """
+    """Orquestador Core de Nahual - Versión corregida"""
     
     DEFAULT_VOLUMEN = 1000
     DEFAULT_FORMATO = 'excel'
@@ -79,7 +68,6 @@ class State:
         logger.info(f"   💾 Formato: {self.formato_salida.upper()}")
         logger.info("=" * 60)
         
-        # Validación crítica
         if not self.columnas:
             self.metricas['error'] = "Lista de columnas vacía"
             logger.error(f"❌ {self.metricas['error']}")
@@ -91,12 +79,11 @@ class State:
                 self.metricas['error'] = "Falló la generación"
                 return self.metricas
             
-            # FASE 2: EXPORTACIÓN (DELEGADA)
+            # FASE 2: EXPORTACIÓN
             if not self._fase_exportacion():
                 self.metricas['error'] = "Falló la exportación"
                 logger.warning("⚠️ Los datos se generaron pero no se guardaron")
             
-            # Métricas finales
             self.metricas['fin'] = time.perf_counter()
             self.metricas['tiempo_total'] = self.metricas['fin'] - self.metricas['inicio']
             
@@ -131,9 +118,9 @@ class State:
         return exito
     
     def _usar_motor_python(self) -> bool:
-        """Invoca MotorFaker.py"""
+        """Invoca MotorFaker.py - CORREGIDO"""
         try:
-            # CORREGIDO: Importación con nombres correctos
+            # CORRECCIÓN: importación correcta
             from process.motorfaker import generar_con_faker
             
             logger.info("🐍 [PYTHON] Generando con Faker...")
@@ -144,16 +131,16 @@ class State:
                 logger.error("❌ Motor Python retornó None")
                 return False
             
-            if hasattr(self.dataset, '__len__') and len(self.dataset) == 0:
+            if isinstance(self.dataset, dict) and len(self.dataset) == 0:
                 logger.warning("⚠️ Dataset vacío")
                 return False
             
-            logger.info(f"✅ [PYTHON] Generados {len(self.dataset)} registros")
+            logger.info(f"✅ [PYTHON] Generados {len(next(iter(self.dataset.values())))} registros")
             return True
             
         except ImportError as e:
-            logger.error(f"❌ No se encontró 'process.MotorFaker': {e}")
-            logger.info("   📁 Debes crear: process/MotorFaker.py")
+            logger.error(f"❌ No se encontró 'process.motorfaker': {e}")
+            logger.info("   📁 Debes crear: process/motorfaker.py")
             logger.info("   📝 Debe contener: def generar_con_faker(volumen, columnas)")
             return False
         except Exception as e:
@@ -161,34 +148,13 @@ class State:
             return False
     
     def _usar_motor_rust(self) -> bool:
-        """Invoca motor Rust (placeholder)"""
-        try:
-            import process.motorrust  # Este módulo debe ser creado por el usuario
-            
-            logger.info("🦀 [RUST] Generando con motor nativo...")
-            
-            if hasattr(motorrust, 'generar_masivo'):
-                self.dataset = motorrust.generar_masivo(self.volumen, self.columnas)
-            elif hasattr(motorrust, 'generar_con_faker'):
-                self.dataset = motorrust.generar_con_faker(self.volumen, self.columnas)
-            else:
-                raise AttributeError("Función no encontrada")
-            
-            return self.dataset is not None
-            
-        except ImportError:
-            logger.warning("🦀 Rust no disponible - Fallback a Python")
-            self.motor_elegido = 'python'
-            return self._usar_motor_python()
-        except Exception as e:
-            logger.error(f"💥 Error en motor Rust: {e}")
-            return False
+        """Invoca motor Rust (placeholder para futura implementación)"""
+        logger.warning("🦀 [RUST] Motor no implementado aún - Usando Python")
+        self.motor_elegido = 'python'
+        return self._usar_motor_python()
     
     def _fase_exportacion(self) -> bool:
-        """
-        DELEGA la exportación al módulo exports.
-        Pipilinais NO implementa exportadores, solo los llama.
-        """
+        """Delega la exportación al ExportManager"""
         logger.info(f"💾 [EXPORTACIÓN] Formato: {self.formato_salida.upper()}")
         
         if not self.dataset:
@@ -198,10 +164,8 @@ class State:
         inicio = time.perf_counter()
         
         try:
-            # IMPORTACIÓN DINÁMICA DEL EXPORTADOR CORRECTO
             from exports.ExportManager import exportar
             
-            # Delegar completamente la exportación
             exito = exportar(
                 dataset=self.dataset,
                 formato=self.formato_salida,
@@ -217,8 +181,6 @@ class State:
             
         except ImportError as e:
             logger.error(f"❌ No se encontró 'exports.ExportManager': {e}")
-            logger.info("   📁 Debes crear: exports/ExportManager.py")
-            logger.info("   📝 Debe contener: def exportar(dataset, formato, volumen, metadata)")
             return False
         except Exception as e:
             logger.error(f"💥 Error en exportación: {e}")
@@ -226,7 +188,7 @@ class State:
             return False
     
     def _mostrar_resumen(self):
-        """Muestra resumen final de la ejecución"""
+        """Muestra resumen final"""
         logger.info("=" * 60)
         logger.info(f"✅ [PIPILINAIS] Pipeline completado")
         logger.info(f"   📊 Registros: {self.metricas['registros_generados']:,}")
@@ -241,9 +203,6 @@ class State:
         logger.info("=" * 60)
 
 
-# ============================================================================
-# PRUEBA RÁPIDA
-# ============================================================================
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format='%(message)s')
     
@@ -254,7 +213,7 @@ if __name__ == "__main__":
         'formato': 'excel'
     }
     
-    print("\n🧪 Probando Pipilinais v4.0...")
+    print("\n🧪 Probando Pipilinais v5.0...")
     pipeline = State(config)
     resultado = pipeline.run()
     

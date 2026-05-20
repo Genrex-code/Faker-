@@ -1,0 +1,3 @@
+Estas son las librerias que nesesitas para funcionar :3 
+
+pip install faker pandas openpyxl pyyaml
