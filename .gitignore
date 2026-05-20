@@ -1,0 +1,8 @@
+#ignorar a:
+*.json
+*.xlsx
+*.csv
+*.sql
+*.log
+*.zip
+
