@@ -12,7 +12,7 @@ import pandas as pd
 logger = logging.getLogger(__name__)
 
 
-def exportar_json(dataset: dict, volumen: int, ruta: str = None, indent: int = 2) -> bool:
+def exportar_json(dataset: dict, volumen: int, ruta: str | None = None, indent: int = 2) -> bool:
     """
     Exporta dataset a JSON
     
@@ -28,9 +28,8 @@ def exportar_json(dataset: dict, volumen: int, ruta: str = None, indent: int = 2
         
         if not ruta:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            ruta = output_dir / f"nahual_datos_{timestamp}.json"
-        else:
-            ruta = Path(ruta)
+            # se enveulve en str() para que vuelva a ser un texto normal, no un Path
+            ruta = str(output_dir / f"nahual_datos_{timestamp}.json")
         
         # Convertir a lista de registros (formato más común para JSON)
         df = pd.DataFrame(dataset)
@@ -48,7 +47,7 @@ def exportar_json(dataset: dict, volumen: int, ruta: str = None, indent: int = 2
         return False
 
 
-def exportar_json_lineas(dataset: dict, volumen: int, ruta: str = None) -> bool:
+def exportar_json_lineas(dataset: dict, volumen: int, ruta: str | None = None) -> bool:
     """
     Exporta a JSON Lines (cada línea es un registro) - útil para big data
     """
@@ -60,9 +59,10 @@ def exportar_json_lineas(dataset: dict, volumen: int, ruta: str = None) -> bool:
         
         if not ruta:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            ruta = output_dir / f"nahual_datos_{timestamp}.jsonl"
+            # se enveulve en str() para que vuelva a ser un texto normal, no un Path
+            ruta = str(output_dir / f"nahual_datos_{timestamp}.jsonl")
         else:
-            ruta = Path(ruta)
+            ruta = str(Path(ruta))
         
         df = pd.DataFrame(dataset)
         

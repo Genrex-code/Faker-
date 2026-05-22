@@ -11,7 +11,7 @@ import pandas as pd
 logger = logging.getLogger(__name__)
 
 
-def exportar_excel(dataset: dict, volumen: int, ruta: str = None, metadata: dict = None) -> bool:
+def exportar_excel(dataset: dict, volumen: int, ruta: str | None = None, metadata: dict | None = None) -> bool:
     """
     Exporta dataset a Excel con formato profesional
     
@@ -32,9 +32,8 @@ def exportar_excel(dataset: dict, volumen: int, ruta: str = None, metadata: dict
         # Generar nombre de archivo si no se proporcionó
         if not ruta:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            ruta = output_dir / f"nahual_datos_{timestamp}.xlsx"
-        else:
-            ruta = Path(ruta)
+            # se enveulve en str() para que vuelva a ser un texto normal, no un Path
+            ruta = str(output_dir / f"nahual_datos_{timestamp}.xlsx")
         
         # Convertir a DataFrame
         df = pd.DataFrame(dataset)

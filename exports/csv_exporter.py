@@ -13,8 +13,9 @@ logger = logging.getLogger(__name__)
 
 def exportar_csv(
     dataset: dict, 
-    volumen: int, 
-    ruta: str = None,
+    volumen: int,
+    #correcion al ruta none que da falsos:
+    ruta: str | None = None,
     delimiter: str = ',',
     encoding: str = 'utf-8-sig'
 ) -> bool:
@@ -34,10 +35,13 @@ def exportar_csv(
         
         if not ruta:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            ruta = output_dir / f"nahual_datos_{timestamp}.csv"
-        else:
-            ruta = Path(ruta)
+            # Lo envolvemos en str() para que vuelva a ser un texto normal
+            ruta = str(output_dir / f"nahual_datos_{timestamp}.csv")
         
+        # ¡Y ELIMINAMOS EL ELSE! 
+        # Si 'ruta' ya venía con un texto desde arriba, no necesitamos 
+
+        # forzarla a ser un Path, Pandas la lee perfecto como texto.
         df = pd.DataFrame(dataset)
         df.to_csv(ruta, index=False, encoding=encoding, sep=delimiter)
         
@@ -50,6 +54,6 @@ def exportar_csv(
         return False
 
 
-def exportar_csv_excel_compatible(dataset: dict, volumen: int, ruta: str = None) -> bool:
+def exportar_csv_excel_compatible(dataset: dict, volumen: int, ruta: str | None = None) -> bool:
     """Exporta CSV compatible con Excel (separador punto y coma)"""
     return exportar_csv(dataset, volumen, ruta, delimiter=';')

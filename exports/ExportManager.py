@@ -31,6 +31,9 @@ def exportar(
     if not dataset or len(dataset) == 0:
         logger.error("❌ Dataset vacío")
         return False
+    # Si no nos pasaron metadata, creamos un diccionario vacío para que los exporters no lloren
+    if metadata is None:
+        metadata = {}
     
     # Importar exportadores según formato
     if formato == 'excel':

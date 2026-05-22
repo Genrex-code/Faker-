@@ -15,7 +15,7 @@ import yaml
 import logging
 from pathlib import Path
 from typing import Dict, Any, Optional, List
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, asdict, field
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 class ConfiguracionGeneracion:
     """Estructura estandarizada de configuración para el pipeline"""
     volumen: int = 1000
-    columnas: List[str] = None
+    columnas: List[str] = field(default_factory=lambda: ['nombre', 'email']) # chingaderia anti tronar activa fiummm 
     formato: str = 'excel'
     motor: str = 'python'  # 'python' o 'rust'
     metadata: Optional[Dict[str, Any]] = None

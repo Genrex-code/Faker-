@@ -109,12 +109,15 @@ class State:
         self.metricas['tiempo_generacion'] = time.perf_counter() - inicio
         self.metricas['motor_usado'] = self.motor_elegido
         
-        if exito and self.dataset is not None:
-            if hasattr(self.dataset, '__len__'):
-                self.metricas['registros_generados'] = len(self.dataset)
-            else:
-                self.metricas['registros_generados'] = self.volumen
-        
+      # Validar la longitud real de los datos generados
+        if self.dataset and isinstance(self.dataset, dict):
+            # En lugar de contar las columnas, tomamos la primera (ej. 'nombre') 
+            # y contamos cuántos datos tiene adentro.
+            primera_columna = next(iter(self.dataset.values()))
+            self.metricas['registros_generados'] = len(primera_columna)
+        else:
+            # Fallback seguro
+            self.metricas['registros_generados'] = self.volumen
         return exito
     
     def _usar_motor_python(self) -> bool:
@@ -217,7 +220,12 @@ if __name__ == "__main__":
     pipeline = State(config)
     resultado = pipeline.run()
     
-    if resultado and not resultado.get('error'):
-        print("\n✅ Prueba exitosa!")
+    resultado = pipeline.run()
+
+    # Evaluamos exactamente qué nos devolvió el Pipilinais
+    if resultado is None:
+        print("\n❌ Falló: El pipeline se estrelló brutalmente y devolvió None.") #chingo a su madre en pocas palabras 
+    elif resultado.get('error'):
+        print(f"\n❌ Falló el pipeline: {resultado.get('error')}")
     else:
-        print(f"\n❌ Falló: {resultado.get('error')}")
+        print("\n✅ Prueba exitosa!")
