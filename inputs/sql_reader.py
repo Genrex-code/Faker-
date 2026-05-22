@@ -64,6 +64,7 @@ class SQLConnectionConfig:
             raise ValueError(f"Motor de base de datos no soportado: {self.db_type}")
 
 
+#sigo pensando que data class es mejor para este caso 
 @dataclass
 class SQLReaderConfig:
     """Configuración completa que retorna el SQL Reader"""
